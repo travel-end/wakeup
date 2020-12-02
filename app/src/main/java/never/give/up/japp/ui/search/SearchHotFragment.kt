@@ -9,10 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import never.give.up.japp.R
 import never.give.up.japp.base.BaseVmFragment
-import never.give.up.japp.model.ContentTitle
-import never.give.up.japp.model.HistoryTag
-import never.give.up.japp.model.RecommendSearchList
-import never.give.up.japp.model.SearchHistory
+import never.give.up.japp.model.*
 import never.give.up.japp.rv.*
 import never.give.up.japp.utils.getResString
 import never.give.up.japp.utils.gone
@@ -26,14 +23,16 @@ import never.give.up.japp.widget.flowlayout.TagFlowLayout
  * @By Journey 2020/12/2
  * @Description
  */
-class SearchHotFragment:BaseVmFragment<SearchHotViewModel>() {
+class SearchHotFragment : BaseVmFragment<SearchHotViewModel>() {
     private lateinit var rvSearchHot: RecyclerView
+
     companion object {
         fun newInstance(): SearchHotFragment {
             return SearchHotFragment()
         }
     }
-    override fun layoutResId()=R.layout.view_rv
+
+    override fun layoutResId() = R.layout.view_rv
     override fun initView() {
         super.initView()
         rvSearchHot = mRootView.findViewById(R.id.search_hot_rv)
@@ -41,19 +40,19 @@ class SearchHotFragment:BaseVmFragment<SearchHotViewModel>() {
             adapter {
                 /*推荐搜索*/
                 addItem(R.layout.item_flow_layout) {
-                    isForViewType { data, position -> data is SearchHistory }
+                    isForViewType { data, position -> data is HotItems }
                     bindViewHolder { data, position, holder ->
-                        val searchHistory = (data as SearchHistory).historyList
-                        setText(R.id.item_history_title_tv,R.string.search_history.getResString())
-                        if (isNotNullOrEmpty(searchHistory)) {
+                        val hotItems = (data as HotItems).hots
+                        setText(R.id.item_history_title_tv, R.string.hot_search.getResString())
+                        if (isNotNullOrEmpty(hotItems)) {
                             itemView?.findViewById<TagFlowLayout>(R.id.item_sh_flow_layout)
                                 ?.let { flow ->
                                     flow.adapter =
-                                        object : TagAdapter<HistoryTag>(searchHistory) {
+                                        object : TagAdapter<HotItem>(hotItems) {
                                             override fun getView(
                                                 parent: FlowLayout?,
                                                 position: Int,
-                                                t: HistoryTag?
+                                                t: HotItem?
                                             ): View {
                                                 return LayoutInflater.from(parent?.context)
                                                     .inflate(
@@ -61,11 +60,11 @@ class SearchHotFragment:BaseVmFragment<SearchHotViewModel>() {
                                                         parent,
                                                         false
                                                     )
-                                                    .apply { (this as TextView).text = t?.name }
+                                                    .apply { (this as TextView).text = t?.first }
                                             }
                                         }
                                     flow.setOnTagClickListener { _, position, _ ->
-                                        val historyTag = searchHistory!![position].name
+                                        val historyTag = hotItems!![position].first
                                         if (historyTag.isNotNullOrEmpty()) {
 //                                            val parent = (parentFragment as SearchMainFragment)
 //                                            parent.removeFragment(this@SearchHotFragment)
@@ -79,7 +78,8 @@ class SearchHotFragment:BaseVmFragment<SearchHotViewModel>() {
                         } else {
                             visible(R.id.item_sh_tv_no)
                             invisible(R.id.item_history_end_iv)
-                            itemView?.findViewById<TagFlowLayout>(R.id.item_sh_flow_layout)?.removeAllViews()
+                            itemView?.findViewById<TagFlowLayout>(R.id.item_sh_flow_layout)
+                                ?.removeAllViews()
                             itemView?.findViewById<TagFlowLayout>(R.id.item_sh_flow_layout)?.gone()
                         }
                         clicked(R.id.item_history_end_iv, View.OnClickListener {
@@ -87,8 +87,6 @@ class SearchHotFragment:BaseVmFragment<SearchHotViewModel>() {
                         })
                     }
                 }
-
-                // 5
                 addItem(R.layout.view_content_title) {
                     isForViewType { data, _ -> data is ContentTitle }
                     bindViewHolder { data, position, holder ->
@@ -98,32 +96,29 @@ class SearchHotFragment:BaseVmFragment<SearchHotViewModel>() {
                 }
                 // 6
                 addItem(R.layout.view_gradient_bg) {
-                    isForViewType { data, position -> data is RecommendSearchList }
+                    isForViewType { data, position -> data is SearchHistory }
                     bindViewHolder { data, position, holder ->
-                        val songList = (data as RecommendSearchList).recommendSearch
+                        val histories = (data as SearchHistory).historyList
                         val rootView = itemView as LinearLayout
-                        if (isNotNullOrEmpty(songList)) {
+                        if (isNotNullOrEmpty(histories)) {
                             rootView.removeAllViews()
                             val lps = LinearLayout.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT
                             )
                             lps.setMargins(0, 10, 0, 10)
-                            for (song in songList) {
+                            for (tag in histories!!) {
                                 val itemSongView = View.inflate(
                                     requireContext(),
                                     R.layout.item_num_content,
                                     null
                                 )
-                                val tvSongName: TextView =
+                                val tagName: TextView =
                                     itemSongView.findViewById(R.id.item_search_hot_song_tv_song_name)
-                                val tvDesc: TextView =
-                                    itemSongView.findViewById(R.id.item_search_hot_song_tv_description)
                                 val tvIndex: TextView =
                                     itemSongView.findViewById(R.id.item_search_hot_song_tv_index)
-//                                tvSongName.text = song.songName
-//                                tvDesc.text = song.desc
-                                tvIndex.text = "${song.id ?: 0}"
+                                tagName.text = tag.name
+                                tvIndex.text = "${tag.id ?: 0}"
                                 rootView.addView(itemSongView, lps)
                             }
                         }
@@ -137,6 +132,7 @@ class SearchHotFragment:BaseVmFragment<SearchHotViewModel>() {
         super.initData()
         mViewModel.initHotSearchData()
     }
+
     override fun observe() {
         super.observe()
         mViewModel.mData.observe(this, Observer {
@@ -144,7 +140,7 @@ class SearchHotFragment:BaseVmFragment<SearchHotViewModel>() {
                 rvSearchHot.submitList(it)
             }
         })
-        mViewModel.deleteHistory.observe(this,Observer{
+        mViewModel.deleteHistory.observe(this, Observer {
             if (it == true) {
                 rvSearchHot.updateData(0, SearchHistory())
             }

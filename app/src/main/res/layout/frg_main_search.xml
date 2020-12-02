@@ -63,9 +63,9 @@
             android:textColor="@color/black_33"
             android:textSize="15sp" />
     </LinearLayout>
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/searchVp"
+    <FrameLayout
+        android:id="@+id/main_search_fl_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"/>
 </LinearLayout>

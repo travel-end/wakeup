@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import never.give.up.japp.consts.State
 import never.give.up.japp.data.JAppDatabase
+import never.give.up.japp.net.ApiService
+import never.give.up.japp.net.RetrofitClient
 
 /**
  * @By Journey 2020/12/2
@@ -14,6 +16,18 @@ import never.give.up.japp.data.JAppDatabase
 open class BaseViewModel:ViewModel() {
     protected val db by lazy { JAppDatabase.getInstance() }
     val loadStatus by lazy { MutableLiveData<State>() }
+    protected val apiService: ApiService by lazy {
+        RetrofitClient.instance.apiService
+    }
+    protected val singerApiService: ApiService by lazy {
+        RetrofitClient.instance.singerApiService
+    }
+    protected val songUrlApiService: ApiService by lazy {
+        RetrofitClient.instance.songUrlApiService
+    }
+    protected val neteaseApiService: ApiService by lazy {
+        RetrofitClient.instance.neteaseApiService
+    }
     protected fun request(block: suspend () -> Unit) {
         viewModelScope.launch {
             try {

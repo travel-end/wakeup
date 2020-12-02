@@ -18,13 +18,11 @@ class SearchHotViewModel:BaseViewModel() {
     fun initHotSearchData() {
         val searchDao = db.searchDao
         request {
-            val historyTags = searchDao.findRecentSearchHistory(5)
-            data.add(SearchHistory(historyTags))
+            val hotSearch = neteaseApiService.getHotSearchInfo()
+            data.add(hotSearch.result!!)
             data.add(ContentTitle(R.string.hot_search.getResString()))
-//            val recommendSearch = searchDao.findRandomRecommendSearch(5)
-//            data.add(RecommendSearchList(recommendSearch))
-            //5
-
+            val historyTags = searchDao.findRecentSearchHistory(10)
+            data.add(SearchHistory(historyTags))
             mData.value = data
         }
     }
