@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PlayPauseView">
+        <attr name="bg_color" format="color" />
+        <attr name="btn_color" format="color" />
+        <attr name="loadingColor" format="color|reference" />
+        <attr name="gap_width" format="dimension" />
+        <attr name="border_width" format="dimension|reference" />
+        <attr name="hasProgress" format="boolean|reference" />
+        <attr name="space_padding" format="float" />
+        <attr name="anim_duration" format="integer" />
+        <attr name="anim_direction">
+            <enum name="positive" value="1" />
+            <enum name="negative" value="2" />
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="ClearEditText">
+        <attr name="clearIcon" format="reference" />
+        <attr name="scaleSize" format="float" />
+        <attr name="drawableWidth" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="TagFlowLayout">
+        <attr name="max_select" format="integer" />
+        <attr name="tag_gravity">
+            <enum name="left" value="-1" />
+            <enum name="center" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>

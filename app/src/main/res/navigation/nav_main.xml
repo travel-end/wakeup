@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/main_Fragment">
+    <fragment
+        android:id="@+id/main_Fragment"
+        android:name="never.give.up.japp.ui.MainFragment"
+        android:label="MainFragment"
+        tools:layout="@layout/frg_main">
+    </fragment>
+</navigation>
