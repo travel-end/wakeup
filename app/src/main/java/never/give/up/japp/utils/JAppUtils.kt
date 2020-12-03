@@ -1,5 +1,6 @@
 package never.give.up.japp.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.text.Editable
@@ -10,6 +11,8 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -130,4 +133,27 @@ fun getStatusBarHeight(context: Context): Int {
         e.printStackTrace()
         height
     }
+}
+
+
+fun EditText?.showKeyBoard(context: Context) {
+    this?.let { et ->
+        // 设置可获得焦点
+        et.isFocusable = true
+        et.isFocusableInTouchMode = true
+        // 获取焦点
+        et.requestFocus()
+        // 调用系统输入法
+        val imm =
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS)
+    }
+
+}
+
+fun Activity.hideKeyboards() {
+    // 当前焦点的 View
+    val imm =
+        this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)
 }

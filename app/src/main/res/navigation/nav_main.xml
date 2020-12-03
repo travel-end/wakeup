@@ -9,5 +9,20 @@
         android:name="never.give.up.japp.ui.MainFragment"
         android:label="MainFragment"
         tools:layout="@layout/frg_main">
+        <action
+            android:id="@+id/action_mainFragment_to_searchMainFragment"
+            app:destination="@id/search_main_fragment"
+            app:enterAnim="@anim/h_fragment_enter"
+            app:exitAnim="@anim/h_fragment_exit"
+            app:popEnterAnim="@anim/h_fragment_pop_enter"
+            app:popExitAnim="@anim/h_fragment_pop_exit" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/search_main_fragment"
+        android:name="never.give.up.japp.ui.search.SearchMainFragment"
+        android:label="SearchMainFragment"
+        tools:layout="@layout/frg_main_search">
+
     </fragment>
 </navigation>

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import never.give.up.japp.consts.State
-import never.give.up.japp.data.JAppDatabase
 import never.give.up.japp.net.ApiService
 import never.give.up.japp.net.RetrofitClient
 
@@ -14,7 +13,7 @@ import never.give.up.japp.net.RetrofitClient
  * @Description
  */
 open class BaseViewModel:ViewModel() {
-    protected val db by lazy { JAppDatabase.getInstance() }
+//    protected val db by lazy { JAppDatabase.getInstance() }
     val loadStatus by lazy { MutableLiveData<State>() }
     protected val apiService: ApiService by lazy {
         RetrofitClient.instance.apiService

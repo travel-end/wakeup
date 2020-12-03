@@ -12,7 +12,7 @@
             android:id="@+id/item_history_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="@string/search_history"
+            android:text="@string/recommend_search"
             android:layout_marginStart="@dimen/dp_16"
             android:textColor="@color/black2"
             android:layout_gravity="center_vertical"
@@ -22,6 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/delete"
+            android:visibility="invisible"
             android:layout_marginTop="@dimen/dp_2"
             android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="@dimen/dp_16" />

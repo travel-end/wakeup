@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 
 /**
  * @By Journey 2020/12/2
@@ -52,5 +54,14 @@ abstract class BaseFragment:Fragment() {
     }
     open fun initStatusBar() {
 
+    }
+
+    protected fun nav(id:Int,bundle: Bundle?=null) {
+        val nav = NavHostFragment.findNavController(this)
+        if (bundle != null) {
+            nav.navigate(id,bundle)
+        } else {
+            nav.navigate(id)
+        }
     }
 }

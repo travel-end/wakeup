@@ -14,6 +14,7 @@ import never.give.up.japp.rv.*
 import never.give.up.japp.utils.getResString
 import never.give.up.japp.utils.gone
 import never.give.up.japp.utils.isNotNullOrEmpty
+import never.give.up.japp.utils.log
 import never.give.up.japp.vm.SearchHotViewModel
 import never.give.up.japp.widget.flowlayout.FlowLayout
 import never.give.up.japp.widget.flowlayout.TagAdapter
@@ -38,7 +39,6 @@ class SearchHotFragment : BaseVmFragment<SearchHotViewModel>() {
         rvSearchHot = mRootView.findViewById(R.id.search_hot_rv)
         rvSearchHot.setup<Any> {
             adapter {
-                /*推荐搜索*/
                 addItem(R.layout.item_flow_layout) {
                     isForViewType { data, position -> data is HotItems }
                     bindViewHolder { data, position, holder ->
@@ -66,10 +66,10 @@ class SearchHotFragment : BaseVmFragment<SearchHotViewModel>() {
                                     flow.setOnTagClickListener { _, position, _ ->
                                         val historyTag = hotItems!![position].first
                                         if (historyTag.isNotNullOrEmpty()) {
-//                                            val parent = (parentFragment as SearchMainFragment)
-//                                            parent.removeFragment(this@SearchHotFragment)
-//                                            parent.replaceFragment(SearchVpFragment.newInstance(historyTag!!),historyTag)
-//                                            LogUtil.e("searchHistory name:$historyTag")
+                                            val parent = (parentFragment as SearchMainFragment)
+                                            parent.removeFragment(this@SearchHotFragment)
+                                            parent.replaceFragment(SearchResultFragment.newInstance(historyTag!!),historyTag)
+                                            "推荐搜索 name:$historyTag".log()
                                         }
                                         false
                                     }
@@ -90,11 +90,10 @@ class SearchHotFragment : BaseVmFragment<SearchHotViewModel>() {
                 addItem(R.layout.view_content_title) {
                     isForViewType { data, _ -> data is ContentTitle }
                     bindViewHolder { data, position, holder ->
-                        invisible(R.id.item_history_end_iv)
+                        invisible(R.id.item_common_end_tv)
                         setText(R.id.item_history_title_tv, (data as ContentTitle).title)
                     }
                 }
-                // 6
                 addItem(R.layout.view_gradient_bg) {
                     isForViewType { data, position -> data is SearchHistory }
                     bindViewHolder { data, position, holder ->
