@@ -10,8 +10,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import never.give.up.japp.R
 import never.give.up.japp.listener.OnMusicItemClickListener
-import never.give.up.japp.model.core.ListBean
-import never.give.up.japp.utils.StringUtil
+import never.give.up.japp.model.Music
 import never.give.up.japp.utils.fastClickListener
 import never.give.up.japp.utils.isNotNullOrEmpty
 import never.give.up.japp.utils.setDiffColor
@@ -23,13 +22,13 @@ import never.give.up.japp.widget.RippleView
  */
 class MusicAdapter(private val context: Context, private val searchText: String) :
     RecyclerView.Adapter<MusicAdapter.SearchSingleSongViewHolder>() {
-    private var dataList: List<ListBean>? = null
+    private var dataList: List<Music>? = null
     private var onMusicItemClickListener: OnMusicItemClickListener? = null
     fun setOnMusicItemClickListener(listener: OnMusicItemClickListener) {
         this.onMusicItemClickListener = listener
     }
 
-    fun setData(data: List<ListBean>) {
+    fun setData(data: List<Music>) {
         this.dataList = data
     }
 
@@ -55,21 +54,21 @@ class MusicAdapter(private val context: Context, private val searchText: String)
 
     override fun onBindViewHolder(holder: SearchSingleSongViewHolder, position: Int) {
         if (isNotNullOrEmpty(dataList)) {
-            val bean = dataList!![position]
+            val music = dataList!![position]
             holder.run {
-                tvSongName.text = bean.songname
-                tvSinger.text = StringUtil.getSinger(bean)
-                tvAlbum.text = bean.albumname
-                tvSongName.setDiffColor(searchText, bean.songname)
-                tvSinger.setDiffColor(searchText, StringUtil.getSinger(bean))
-                tvAlbum.setDiffColor(searchText, bean.albumname)
+                tvSongName.text = music.title
+                tvSinger.text = music.artist
+                tvAlbum.text = music.album
+                tvSongName.setDiffColor(searchText, music.title)
+                tvSinger.setDiffColor(searchText, music.artist)
+                tvAlbum.setDiffColor(searchText, music.album)
 //                ivIsDownload.isVisible = DownloadedUtil.hasDownloadedSong(bean.songmid?:"")
-                if (bean.lyric.isNotNullOrEmpty()) {
-                    tvLyric.text = bean.lyric
+                if (music.lyric.isNotNullOrEmpty()) {
+                    tvLyric.text = music.lyric
                     tvLyric.isVisible = true
                 }
                 rippleView.setOnRippleCompleteListener {
-                    onMusicItemClickListener?.onMusicItemClick(bean, position)
+                    onMusicItemClickListener?.onMusicItemClick(music, position)
                 }
                 ivMoreFunction.fastClickListener {
                     onMusicItemClickListener?.onMoreClick(it)

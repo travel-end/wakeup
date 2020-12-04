@@ -3,16 +3,16 @@ package never.give.up.japp.utils
 import com.cyl.musicapi.playlist.MusicInfo
 import never.give.up.japp.consts.Constants
 import never.give.up.japp.model.core.ListBean
-import never.give.up.japp.model.core.Music
+import never.give.up.japp.model.Music
 
 /**
  * @By Journey 2020/12/3
  * @Description
  */
 object MusicUtil {
-    private val PIC_SIZE_SMALL = 0
-    private val PIC_SIZE_NORMAL = 1
-    private val PIC_SIZE_BIG = 2
+    val PIC_SIZE_SMALL = 0
+    val PIC_SIZE_NORMAL = 1
+    val PIC_SIZE_BIG = 2
     fun getMusic(musicInfo: MusicInfo): Music {
         val music = Music()
         if (musicInfo.songId != null) {
@@ -44,15 +44,36 @@ object MusicUtil {
             music.artistId = artistIds
         }
         music.coverUri = getAlbumPic(musicInfo.album?.cover, musicInfo.vendor, PIC_SIZE_NORMAL)
-        music.coverBig = getAlbumPic(musicInfo.album?.cover, musicInfo.vendor, PIC_SIZE_NORMAL)
+        music.coverBig = getAlbumPic(musicInfo.album?.cover, musicInfo.vendor, PIC_SIZE_BIG)
         music.coverSmall = getAlbumPic(musicInfo.album?.cover, musicInfo.vendor, PIC_SIZE_SMALL)
         return music
     }
 
     fun getMusic(bean: ListBean): Music {
         val music = Music()
-
-
+        music.mid = bean.songmid
+        val singers = bean.singer
+        if (singers != null) {
+            var artistIds = singers[0].id.toString()
+            var artistNames = singers[0].name
+            for (j in 1 until singers.size - 1) {
+                artistIds += ",${singers[j].id}"
+                artistNames += ",${singers[j].name}"
+            }
+            music.artist = artistNames
+            music.artistId = artistIds
+            music.title = bean.songname
+//            music.coverUri = "${Constants.ALBUM_PIC}${bean.albummid}${Constants.JPG}"
+            music.coverUri = getAlbumPic(bean.albummid, bean.mainType, PIC_SIZE_NORMAL)
+//            music.coverBig = getAlbumPic(musicInfo.album?.cover, musicInfo.vendor, PIC_SIZE_BIG)
+//            music.coverSmall = getAlbumPic(musicInfo.album?.cover, musicInfo.vendor, PIC_SIZE_SMALL)
+            music.duration = bean.interval.toLong()
+            music.isOnline = true
+            music.album = bean.albumname
+            music.albumId = bean.albummid
+            music.type = bean.mainType
+            music.lyric = bean.lyric
+        }
         return music
     }
 
@@ -60,17 +81,18 @@ object MusicUtil {
         println(url)
         return when (type) {
             Constants.QQ -> {
-                when (size) {
-                    PIC_SIZE_SMALL -> {
-                        url?.replace("150x150", "90x90")
-                    }
-                    PIC_SIZE_NORMAL -> {
-                        url?.replace("150x150", "150x150")
-                    }
-                    else -> {
-                        url?.replace("150x150", "300x300")
-                    }
-                }
+//                when (size) {
+//                    PIC_SIZE_SMALL -> {
+//                        url?.replace("150x150", "90x90")
+//                    }
+//                    PIC_SIZE_NORMAL -> {
+//                        url?.replace("150x150", "150x150")
+//                    }
+//                    else -> {
+//                        url?.replace("150x150", "300x300")
+//                    }
+//                }
+                "${Constants.ALBUM_PIC}$url${Constants.JPG}"
             }
             Constants.XIAMI -> {
                 val tmp = url?.split("@")?.get(0) ?: url

@@ -142,7 +142,7 @@ data class ListBean (
     var tag:Int = 0,
     var ver:Int = 0,
     var singer: List<SingerBean>? = null,
-    var mainType:Int = 0,
+    var mainType:String = "",
     var secondType:Int = 0,
     var isPoetrySong:Int=0,
     var poetrySongId:Int=0,

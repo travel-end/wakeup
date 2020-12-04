@@ -3,6 +3,7 @@ package never.give.up.japp.utils
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
+import android.os.Build
 import android.text.Editable
 import android.text.Html
 import android.text.SpannableStringBuilder
@@ -98,6 +99,12 @@ fun String?.log(tag:String = "Japp") {
     }
 }
 
+fun String?.logi(tag:String = "Japp") {
+    if (this.isNotNullOrEmpty()) {
+        Log.i(tag,this!!)
+    }
+}
+
 fun View?.visible() {
     if (this?.visibility == View.GONE) {
         this.visibility = View.VISIBLE
@@ -157,3 +164,7 @@ fun Activity.hideKeyboards() {
         this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)
 }
+
+//是否是Android 8.0
+val isAndroidO get() =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O

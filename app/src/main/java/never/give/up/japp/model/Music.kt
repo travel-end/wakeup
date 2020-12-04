@@ -1,4 +1,4 @@
-package never.give.up.japp.model.core
+package never.give.up.japp.model
 
 import android.os.Parcel
 import android.os.Parcelable
