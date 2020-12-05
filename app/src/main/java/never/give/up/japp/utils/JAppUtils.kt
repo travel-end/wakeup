@@ -3,6 +3,7 @@ package never.give.up.japp.utils
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
+import android.net.ConnectivityManager
 import android.os.Build
 import android.text.Editable
 import android.text.Html
@@ -18,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.*
 import never.give.up.japp.Japp
 import java.lang.reflect.ParameterizedType
 
@@ -142,6 +144,12 @@ fun getStatusBarHeight(context: Context): Int {
     }
 }
 
+fun isNetworkAvailable(context: Context):Boolean{
+    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val info = cm.activeNetworkInfo
+    return info != null && info.isAvailable
+}
+
 
 fun EditText?.showKeyBoard(context: Context) {
     this?.let { et ->
@@ -168,3 +176,22 @@ fun Activity.hideKeyboards() {
 //是否是Android 8.0
 val isAndroidO get() =
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+
+fun <T> execute(block:suspend () -> T) :T{
+    return runBlocking {
+        withContext(Dispatchers.IO) {
+            block.invoke()
+        }
+    }
+}
+
+// TODO: 2020/11/19 处理协程泄露的问题
+fun <T> async(block:suspend () -> T) :T?{
+    var result:T?=null
+    GlobalScope.launch {
+        result = withContext(Dispatchers.IO) {
+            block.invoke()
+        }
+    }
+    return result
+}

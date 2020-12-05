@@ -103,6 +103,4 @@ fun ImageView.loadImgOfError(url: String, errorBlock: () -> Unit) {
 
         })
         .into(this)
-
-
 }

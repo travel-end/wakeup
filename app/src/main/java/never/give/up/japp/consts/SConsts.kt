@@ -5,6 +5,7 @@ package never.give.up.japp.consts
  * @Description
  */
 object SConsts {
+    const val MAX_ERROR_TIMES = 1
     const val TRACK_WENT_TO_NEXT = 2//下一首
     const val RELEASE_WAKELOCK = 3//播放完成
     const val TRACK_PLAY_ENDED = 4//播放完成

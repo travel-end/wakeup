@@ -116,7 +116,7 @@ class SearchHotFragment : BaseVmFragment<SearchHotViewModel>() {
                                     itemSongView.findViewById(R.id.item_search_hot_song_tv_song_name)
                                 val tvIndex: TextView =
                                     itemSongView.findViewById(R.id.item_search_hot_song_tv_index)
-                                tagName.text = tag.name
+                                tagName.text = tag.title
                                 tvIndex.text = "${tag.id ?: 0}"
                                 rootView.addView(itemSongView, lps)
                             }

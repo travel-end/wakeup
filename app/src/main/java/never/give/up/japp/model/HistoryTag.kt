@@ -8,7 +8,6 @@ import org.litepal.crud.LitePalSupport
  * @Description
  */
 data class HistoryTag(
-    val id: Int? = null,
-    val name: String? = null,
-    val tagId: String? = null
+    val id: Long? = null,
+    val title: String? = null
 ):LitePalSupport()
