@@ -33,8 +33,8 @@ object MusicApi {
             music.uri = downloadPath
             return music
         }
-        var playUrl: String? = null
         if (music.type == Constants.QQ) {
+            var playUrl: String? = null
             val songUrl =
                 "${Constants.SONG_URL_DATA_LEFT}${music.mid}${Constants.SONG_URL_DATA_RIGHT}"
             execute {
@@ -62,7 +62,7 @@ object MusicApi {
             return music
         } else {
             val uri = MusicApiServiceImpl.getMusicUrl(music.type?:Constants.LOCAL,music.mid?:"",quality)
-            music.uri = playUrl
+            music.uri = uri
             return music
         }
     }

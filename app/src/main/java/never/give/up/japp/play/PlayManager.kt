@@ -27,6 +27,7 @@ object PlayManager {
         }
         try {
             val contextWrapper = ContextWrapper(realActivity)
+            contextWrapper.startService(Intent(contextWrapper,PlayerService::class.java))
             val binder = ServiceBinder(callback)
             if (contextWrapper.bindService(Intent().setClass(contextWrapper,PlayerService::class.java),binder,0)) {
                 mConnectionMap[contextWrapper] = binder
