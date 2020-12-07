@@ -21,17 +21,19 @@ class MusicPlayerEngine(service: PlayerService) : MediaPlayer.OnErrorListener,
     companion object {
         private const val TAG = "MusicPlayerEngine"
     }
+
     private var mIsInitialized: Boolean = false // 是否已经初始化
     private var mIsPrepared: Boolean = false
     private var mService: WeakReference<PlayerService> = WeakReference(service)
     private var mMediaPlayer = MediaPlayer()
-    private var mHandler:Handler?=null
+    private var mHandler: Handler? = null
 
     init {
         mMediaPlayer.setWakeMode(mService.get(), PowerManager.PARTIAL_WAKE_LOCK)
     }
 
-    fun setDataSource(path: String) {
+    fun setDataSource(path: String?) {
+        mIsInitialized = setDataSourceImpl(mMediaPlayer, path)
     }
 
     private fun setDataSourceImpl(mediaPlayer: MediaPlayer, path: String?): Boolean {
@@ -40,7 +42,9 @@ class MusicPlayerEngine(service: PlayerService) : MediaPlayer.OnErrorListener,
             if (mediaPlayer.isPlaying) mediaPlayer.stop()
             mIsPrepared = false
             mediaPlayer.reset()
+            // 默认开启缓存
             val cacheSetting = SpUtil.getBoolean("key_cache_mode", true)
+            "缓存设置cacheSetting:$cacheSetting".log(TAG)
             // 本地歌曲无需缓存
             if (path.startsWith("content://") || path.startsWith("/storage")) {
                 mService.get()?.let { mediaPlayer.setDataSource(it, Uri.parse(path)) }
@@ -71,25 +75,28 @@ class MusicPlayerEngine(service: PlayerService) : MediaPlayer.OnErrorListener,
         this.mHandler = handler
     }
 
-    val  isInitialized get() = mIsInitialized
+    val isInitialized get() = mIsInitialized
 
     val isPrepared get() = mIsPrepared
 
     fun start() {
         mMediaPlayer.start()
     }
+
     fun stop() {
         try {
             mMediaPlayer.reset()
             mIsInitialized = false
             mIsPrepared = false
-        } catch (e:IllegalStateException) {
+        } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
     }
+
     fun release() {
         mMediaPlayer.release()
     }
+
     fun pause() {
         mMediaPlayer.pause()
     }
@@ -100,38 +107,42 @@ class MusicPlayerEngine(service: PlayerService) : MediaPlayer.OnErrorListener,
     val duration get() = if (mIsPrepared) mMediaPlayer.duration else 0
 
     /*获取播放进度*/
-    fun getCurrentPosition():Int {
+    fun getCurrentPosition(): Int {
         return try {
             mMediaPlayer.currentPosition
-        } catch (e:IllegalStateException) {
+        } catch (e: IllegalStateException) {
             -1
         }
     }
-    fun seek(whereto:Int) {
+
+    fun seek(whereto: Int) {
         mMediaPlayer.seekTo(whereto)
     }
-    fun setVolume(vol:Float) {
+
+    fun setVolume(vol: Float) {
         try {
-            mMediaPlayer.setVolume(vol,vol)
-        } catch (e:Exception) {
+            mMediaPlayer.setVolume(vol, vol)
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+    fun getAudioSessionId(): Int {
+        return mMediaPlayer.audioSessionId
+    }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        when(what) {
-            MediaPlayer.MEDIA_ERROR_UNKNOWN,MediaPlayer.MEDIA_ERROR_SERVER_DIED->{
+        when (what) {
+            MediaPlayer.MEDIA_ERROR_UNKNOWN, MediaPlayer.MEDIA_ERROR_SERVER_DIED -> {
                 val service = mService.get()
-                // TODO: 2020/11/24 上传错误songId和SongTitle
-                val errorInfo = TrackErrorInfo("","")
+                val errorInfo = TrackErrorInfo(service?.getAudioId(), service?.getTitle())
                 mIsInitialized = false
                 mMediaPlayer.release()
                 mMediaPlayer = MediaPlayer()
-                mMediaPlayer.setWakeMode(service,PowerManager.PARTIAL_WAKE_LOCK)
-                val msg = mHandler?.obtainMessage(SConsts.TRACK_PLAY_ERROR,errorInfo)
+                mMediaPlayer.setWakeMode(service, PowerManager.PARTIAL_WAKE_LOCK)
+                val msg = mHandler?.obtainMessage(SConsts.TRACK_PLAY_ERROR, errorInfo)
                 if (msg != null) {
-                    mHandler?.sendMessageDelayed(msg,500)
+                    mHandler?.sendMessageDelayed(msg, 500)
                 }
                 return true
             }
@@ -143,14 +154,14 @@ class MusicPlayerEngine(service: PlayerService) : MediaPlayer.OnErrorListener,
         if (mp == mMediaPlayer) {
             mHandler?.sendEmptyMessage(SConsts.TRACK_WENT_TO_NEXT)
         } else {
-            mService.get()
+            mService.get()?.mWakeLock?.acquire(30000)
             mHandler?.sendEmptyMessage(SConsts.TRACK_PLAY_ENDED)
             mHandler?.sendEmptyMessage(SConsts.RELEASE_WAKELOCK)
         }
     }
 
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
-        val msg = mHandler?.obtainMessage(SConsts.PREPARE_ASYNC_UPDATE,percent)
+        val msg = mHandler?.obtainMessage(SConsts.PREPARE_ASYNC_UPDATE, percent)
         if (msg != null) {
             mHandler?.sendMessage(msg)
         }
@@ -170,7 +181,7 @@ class MusicPlayerEngine(service: PlayerService) : MediaPlayer.OnErrorListener,
     }
 
     data class TrackErrorInfo(
-        val audioId:String,
-        val trackName:String
+        val audioId: String?,
+        val trackName: String?
     )
 }

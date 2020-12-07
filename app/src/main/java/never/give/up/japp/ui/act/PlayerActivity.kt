@@ -1,4 +1,4 @@
-package never.give.up.japp.ui.player
+package never.give.up.japp.ui.act
 
 import never.give.up.japp.base.BaseVmActivity
 import never.give.up.japp.vm.PlayerViewModel

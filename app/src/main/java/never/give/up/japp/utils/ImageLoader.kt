@@ -33,6 +33,7 @@ fun ImageView.loadImg(
         .with(this.context)
         .load(url)
         .apply(option)
+        .diskCacheStrategy(DiskCacheStrategy.ALL)
         .into(this)
 }
 

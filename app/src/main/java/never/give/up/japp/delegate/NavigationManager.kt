@@ -1,7 +1,7 @@
 package never.give.up.japp.delegate
 
 import android.view.MenuItem
-import never.give.up.japp.MainActivity
+import never.give.up.japp.ui.act.MainActivity
 
 /**
  * @By Journey 2020/10/24

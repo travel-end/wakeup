@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">JApp</string>
+    <string name="music_name">Wheat Music</string>
+    <string name="transition_cover">CoverTransition</string>
+    <string name="transition_album">AlbumTransition</string>
     <string name="empty">空空如也  …</string>
     <string name="net_error">网络错误  …</string>
     <string name="load_error">加载错误  …</string>
@@ -100,4 +103,6 @@
     <string name="lrc_empty">暂无歌词…</string>
     <string name="recommend_singer">推\n荐\n歌\n手</string>
     <string name="search">搜索</string>
+    <string name="unknown_singer">未知歌手</string>
+    <string name="unknown">未知</string>
 </resources>

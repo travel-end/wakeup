@@ -1,8 +1,9 @@
-package never.give.up.japp
+package never.give.up.japp.ui.act
 
 import android.view.MenuItem
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import never.give.up.japp.R
 import never.give.up.japp.base.BaseVmActivity
 import never.give.up.japp.delegate.NavigationManager
 import never.give.up.japp.utils.inflate

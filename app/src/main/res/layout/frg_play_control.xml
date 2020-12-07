@@ -9,6 +9,8 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/playPauseView"
         app:layout_constraintStart_toStartOf="parent"
