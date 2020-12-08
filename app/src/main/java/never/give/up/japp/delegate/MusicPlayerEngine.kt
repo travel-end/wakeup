@@ -44,7 +44,7 @@ class MusicPlayerEngine(service: PlayerService) : MediaPlayer.OnErrorListener,
             mediaPlayer.reset()
             // 默认开启缓存
             val cacheSetting = SpUtil.getBoolean("key_cache_mode", true)
-            "缓存设置cacheSetting:$cacheSetting".log(TAG)
+//            "缓存设置cacheSetting:$cacheSetting".log(TAG)
             // 本地歌曲无需缓存
             if (path.startsWith("content://") || path.startsWith("/storage")) {
                 mService.get()?.let { mediaPlayer.setDataSource(it, Uri.parse(path)) }

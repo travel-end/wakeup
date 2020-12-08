@@ -6,6 +6,7 @@ import androidx.multidex.MultiDexApplication
 import com.danikula.videocache.HttpProxyCacheServer
 import never.give.up.japp.utils.CacheFileNameGenerator
 import never.give.up.japp.utils.FileUtils
+import org.litepal.LitePal
 import java.io.File
 
 /**
@@ -38,6 +39,7 @@ class Japp:MultiDexApplication(),ViewModelStoreOwner {
     override fun onCreate() {
         super.onCreate()
         instances= this
+        LitePal.initialize(this)
         mAppViewModelStore = ViewModelStore()
     }
 

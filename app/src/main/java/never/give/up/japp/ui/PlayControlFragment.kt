@@ -2,12 +2,13 @@ package never.give.up.japp.ui
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.frg_play_control.*
 import never.give.up.japp.R
 import never.give.up.japp.base.BaseVmFragment
@@ -29,6 +30,7 @@ import never.give.up.japp.vm.PlayControlViewModel
  * @Description
  */
 class PlayControlFragment: BaseVmFragment<PlayControlViewModel>() {
+    private val TAG = "PlayControlFragment"
     private var ivCover:ImageView?=null
     private val musicList = mutableListOf<Music>()
     override fun layoutResId()= R.layout.frg_play_control
@@ -43,13 +45,14 @@ class PlayControlFragment: BaseVmFragment<PlayControlViewModel>() {
     override fun initData() {
         super.initData()
         val music = PlayManager.getPlayingMusic()
+        "---PlayControlFragment--playingMusic:$music".log(TAG)
         mRootView.isVisible = music != null
     }
 
     override fun observe() {
         super.observe()
         GlobalSingle.playListChanged.observeInFragment(this,Observer{
-            "---PlayControlFragment---PlaylistEvent---${it?.type}".log()
+            "---PlayControlFragment---PlaylistEvent---${it?.type}".log(TAG)
             it?.let {event->
                 if (event.type == Constants.PLAYLIST_QUEUE_ID) {
                     musicList.clear()
@@ -57,6 +60,20 @@ class PlayControlFragment: BaseVmFragment<PlayControlViewModel>() {
                     bottomPlayRv.submitList(musicList)
                     bottomPlayRv.scrollToPosition(PlayManager.position())
                 }
+            }
+        })
+        GlobalSingle.stateChanged.observeInFragment(this,Observer{
+            "---PlayControlFragment---stateChanged---${it?.isPrepared}".log(TAG)
+            it?.let {
+                playPauseView.setLoading(!it.isPrepared)
+                updatePlayStatus(it.isPlaying)
+            }
+        })
+        GlobalSingle.metaChanged.observeInFragment(this,Observer{
+            "---PlayControlFragment---metaChanged---${it?.music}".log(TAG)
+            it?.let {
+                mRootView.isVisible = it.music != null
+                bottomPlayRv.scrollToPosition(PlayManager.position())
             }
         })
     }
@@ -84,7 +101,7 @@ class PlayControlFragment: BaseVmFragment<PlayControlViewModel>() {
             adapter {
                 addItem(R.layout.item_bottom_music) {
                     ivCover = itemView?.findViewById(R.id.iv_cover)
-                    "---initSongList--".log()
+                    "---initSongList--".log(TAG)
                     bindViewHolder { data, position, holder ->
                         data?.let {
                             it.coverUri?.let {uri->
@@ -99,6 +116,19 @@ class PlayControlFragment: BaseVmFragment<PlayControlViewModel>() {
         }
         bottomPlayRv.submitList(musicList)
         bottomPlayRv.scrollToPosition(PlayManager.position())
+        bottomPlayRv.addOnScrollListener(object :RecyclerView.OnScrollListener(){
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val lm = recyclerView.layoutManager as LinearLayoutManager
+                    val first = lm.findFirstVisibleItemPosition()
+                    val last = lm.findLastVisibleItemPosition()
+                    if (first == last && first != PlayManager.position()) {
+                        PlayManager.play(first)
+                    }
+                }
+            }
+        })
     }
 
     private fun updatePlayStatus(isPlaying:Boolean) {

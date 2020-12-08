@@ -2,7 +2,11 @@ package never.give.up.japp.service
 
 import android.annotation.SuppressLint
 import android.app.*
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothHeadset
+import android.bluetooth.BluetoothProfile
 import android.content.*
+import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.os.*
 import android.support.v4.media.session.PlaybackStateCompat
@@ -12,11 +16,14 @@ import androidx.core.app.NotificationCompat
 import androidx.media.session.MediaButtonReceiver
 import never.give.up.japp.R
 import never.give.up.japp.consts.Constants
+import never.give.up.japp.consts.Extras
 import never.give.up.japp.consts.SConsts
 import never.give.up.japp.data.PlayHistoryLoader
 import never.give.up.japp.delegate.MusicPlayerEngine
 import never.give.up.japp.event.GlobalSingle
+import never.give.up.japp.event.MetaChangedEvent
 import never.give.up.japp.event.PlaylistEvent
+import never.give.up.japp.event.StatusChangedEvent
 import never.give.up.japp.model.Music
 import never.give.up.japp.net.MusicApi
 import never.give.up.japp.net.RetrofitClient
@@ -44,6 +51,7 @@ class PlayerService : Service() {
     private var mPlayingPos: Int = -1
     private var mPlaylistId: String = Constants.PLAYLIST_QUEUE_ID
     private var playErrorTimes: Int = 0 // 错误次数 超过最大错误次数，自动停止播放
+    private var percent: Int = 0// 播放缓存进度
 
     private lateinit var mServiceReceiver: ServiceReceiver
     private lateinit var mHeadsetReceiver: HeadsetReceiver
@@ -421,6 +429,16 @@ class PlayerService : Service() {
 
     val isPrepared get() = mPlayer.isPrepared
 
+    private fun updateWidget(action: String) {
+        val intent = Intent(action)
+        intent.putExtra(SConsts.ACTION_IS_WIDGET,true)
+        intent.putExtra(Extras.PLAY_STATUS,isPlaying)
+        if (action == SConsts.META_CHANGED) {
+            intent.putExtra(Extras.SONG,mPlayingMusic)
+        }
+        sendBroadcast(intent)
+    }
+
     // 播放当前歌曲
     private fun playCurrentAndNext() {
         synchronized(this) {
@@ -655,13 +673,19 @@ class PlayerService : Service() {
     private fun notifyChange(what: String) {
         when (what) {
             SConsts.META_CHANGED -> {
-
+                GlobalSingle.metaChanged.value = MetaChangedEvent(mPlayingMusic)
             }
             SConsts.PLAY_STATE_CHANGED -> {
-
+                mediaSessionManager.updatePlaybackState()
+                GlobalSingle.stateChanged.value =
+                    StatusChangedEvent(isPrepared, isPlaying, percent * getDuration())
             }
-            SConsts.PLAY_QUEUE_CHANGE->{
+            SConsts.PLAY_QUEUE_CHANGE -> {
                 GlobalSingle.playListChanged.value = PlaylistEvent(Constants.PLAYLIST_QUEUE_ID)
+            }
+            SConsts.PLAY_STATE_LOADING_CHANGED->{
+                GlobalSingle.stateChanged.value =
+                    StatusChangedEvent(isPrepared, isPlaying, percent * getDuration())
             }
         }
     }
@@ -755,9 +779,75 @@ class PlayerService : Service() {
                             }
                             s.mPlayer.setVolume(mCurrentVolume)
                         }
+                        //mplayer播放完毕切换到下一首
                         SConsts.TRACK_WENT_TO_NEXT -> {
                             s.mMainHandler.post {
-
+                                s.next(true)
+                            }
+                        }
+                        //mPlayer播放完毕且暂时没有下一首
+                        SConsts.TRACK_PLAY_ENDED -> {
+                            if (PlayQueueManager.getPlayModeId() == PlayQueueManager.PLAY_MODE_REPEAT) {
+                                s.seekTo(0, false)
+                                s.mMainHandler.post(s::play)
+                            } else {
+                                s.mMainHandler.post { s.next(true) }
+                            }
+                        }
+                        // mPlayer播放错误
+                        SConsts.TRACK_PLAY_ERROR -> {
+                            "歌曲播放地址异常，请切换其他歌曲".toast()
+                            s.playErrorTimes++
+                            if (s.playErrorTimes < SConsts.MAX_ERROR_TIMES) {
+                                s.mMainHandler.post { s.next(true) }
+                            } else {
+                                s.mMainHandler.post(s::pause)
+                            }
+                        }
+                        // 释放电源锁
+                        SConsts.RELEASE_WAKELOCK -> {
+                            s.mWakeLock.release()
+                        }
+                        SConsts.PREPARE_ASYNC_UPDATE -> {
+                            s.percent = msg.obj as Int
+                            s.notifyChange(SConsts.PLAY_STATE_LOADING_CHANGED)
+                        }
+                        SConsts.PLAYER_PREPARED -> {
+                            // 准备完毕可以播放
+                            s.isMusicPlaying = true
+                            s.updateNotification(false)
+                            s.notifyChange(SConsts.PLAY_STATE_CHANGED)
+                        }
+                        SConsts.AUDIO_FOCUS_CHANGE -> {
+                            when (msg.arg1) {
+                                // 失去音频焦点、暂时失去焦点
+                                AudioManager.AUDIOFOCUS_LOSS, AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+                                    if (s.isPlaying) {
+                                        s.mPauseByTransientLossOfFocus =
+                                            msg.arg1 == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
+                                    } else {
+                                    }
+                                    s.mMainHandler.post(s::pause)
+                                }
+                                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+                                    removeMessages(SConsts.VOLUME_FADE_UP)
+                                    sendEmptyMessage(SConsts.VOLUME_FADE_DOWN)
+                                }
+                                // 重新获取焦点
+                                AudioManager.AUDIOFOCUS_GAIN -> {
+                                    // 重新获得焦点 且符合播放条件 开始播放
+                                    if (!s.isPlaying && s.mPauseByTransientLossOfFocus) {
+                                        s.mPauseByTransientLossOfFocus = false
+                                        mCurrentVolume = 0f
+                                        s.mPlayer.setVolume(mCurrentVolume)
+                                        s.mMainHandler.post(s::play)
+                                    } else {
+                                        removeMessages(SConsts.VOLUME_FADE_DOWN)
+                                        sendEmptyMessage(SConsts.VOLUME_FADE_UP)
+                                    }
+                                }
+                                else -> {
+                                }
                             }
                         }
                         else -> {
@@ -769,27 +859,71 @@ class PlayerService : Service() {
         }
     }
 
-    class ServiceReceiver : BroadcastReceiver() {
+    private inner class ServiceReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-
-
+            if (intent != null) {
+                if (intent.getBooleanExtra(SConsts.ACTION_IS_WIDGET, false)) {
+                    handleCommandIntent(intent)
+                }
+            }
         }
-
     }
 
-    private class HeadsetReceiver : BroadcastReceiver() {
+    // 耳机拔出广播接收器
+    private inner class HeadsetReceiver : BroadcastReceiver() {
+        private var bluetoothAdapter: BluetoothAdapter
+
+        init {
+            // 有线耳机拔出变化
+            intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+            // 蓝牙耳机拔出变化
+            intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED)
+            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        }
+
         override fun onReceive(context: Context?, intent: Intent?) {
-            TODO("Not yet implemented")
+            if (intent != null) {
+                if (isRunningForeground) {
+                    when (intent.action) {
+                        BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED -> {
+                            "蓝牙耳机拔出状态改变".log()
+                            if (BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(
+                                    BluetoothProfile.HEADSET
+                                ) && isPlaying
+                            ) {
+                                // 蓝牙耳机断开连接，如果当前音乐正在播放 将其暂停
+                                pause()
+                            }
+                        }
+                        AudioManager.ACTION_AUDIO_BECOMING_NOISY -> {
+                            "有线耳机拔出状态改变".log()
+                            if (isPlaying) {
+                                pause()
+                            }
+                        }
+                    }
+                }
+            }
         }
 
     }
 
     // 耳机插入广播接收器
-    class HeadsetPlugInReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            TODO("Not yet implemented")
+    private inner class HeadsetPlugInReceiver : BroadcastReceiver() {
+        init {
+            if (Build.VERSION.SDK_INT >= 21) {
+                intentFilter.addAction(AudioManager.ACTION_HEADSET_PLUG)
+            } else {
+                intentFilter.addAction(Intent.ACTION_HEADSET_PLUG)
+            }
         }
 
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent != null && intent.hasExtra("state")) {
+                val isPlugIn = intent.extras?.getInt("state") == 1
+                "耳机插入状态：$isPlugIn".log()
+            }
+        }
     }
 
     private fun initChannelId(): String {
@@ -815,6 +949,7 @@ class PlayerService : Service() {
     }
 
     override fun onDestroy() {
+        "-----PlayService----onDestroy---".log()
         super.onDestroy()
         val audioEffectsIntent = Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId())
@@ -824,20 +959,16 @@ class PlayerService : Service() {
         mPlayer.stop()
         isMusicPlaying = false
         mPlayer.release()
-
         mHandler.removeCallbacksAndMessages(null)
         if (mWorkThread.isAlive) {
             mWorkThread.quitSafely()
             mWorkThread.interrupt()
         }
-
         audioAndFocusManager.abandonAudioFocus()
         cancelNotification()
-
         unregisterReceiver(mServiceReceiver)
         unregisterReceiver(mHeadsetReceiver)
         unregisterReceiver(mHeadsetPlugInReceiver)
-
         if (mWakeLock.isHeld) {
             mWakeLock.release()
         }

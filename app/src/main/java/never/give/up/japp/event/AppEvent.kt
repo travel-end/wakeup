@@ -18,7 +18,7 @@ data class PlaylistEvent(
 data class StatusChangedEvent(
     var isPrepared:Boolean,
     var isPlaying:Boolean,
-    var percent:Long = 0
+    var percent:Int = 0
 )
 
 // 歌曲变化

@@ -17,12 +17,12 @@ abstract class BaseActivity:AppCompatActivity(),ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutResId())
-//        bindService()
+        bindService()
         initViewModel()
         initStatusBar()
         initView()
-        initData()
-        initAction()
+//        initData()
+//        initAction()
     }
     abstract fun layoutResId(): Int
     open fun initView() {

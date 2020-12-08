@@ -8,4 +8,8 @@ import never.give.up.japp.UnPeekLiveData
  */
 object GlobalSingle {
     val playListChanged:UnPeekLiveData<PlaylistEvent> = UnPeekLiveData()
+
+    val stateChanged:UnPeekLiveData<StatusChangedEvent> = UnPeekLiveData()
+
+    val metaChanged:UnPeekLiveData<MetaChangedEvent> = UnPeekLiveData()
 }

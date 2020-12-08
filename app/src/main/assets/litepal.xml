@@ -5,5 +5,10 @@
     <list>
         <mapping class="never.give.up.japp.model.Music" />
         <mapping class="never.give.up.japp.model.HistoryTag" />
+        <mapping class="never.give.up.japp.model.Playlist" />
+        <mapping class="never.give.up.japp.model.MusicToPlaylist" />
+        <mapping class="never.give.up.japp.model.Album" />
+        <mapping class="never.give.up.japp.model.Artist" />
+        <mapping class="never.give.up.japp.model.TasksManagerModel" />
     </list>
 </litepal>
