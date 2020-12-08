@@ -13,7 +13,7 @@ import android.os.PowerManager
 import android.view.KeyEvent
 import never.give.up.japp.consts.SConsts
 import never.give.up.japp.service.PlayerService
-import never.give.up.japp.ui.act.MainActivity
+import never.give.up.japp.ui.MainActivity
 import never.give.up.japp.utils.log
 
 /**

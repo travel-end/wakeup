@@ -16,6 +16,8 @@
     <color name="default_cover_bg">#EAF0FC</color>
     <color name="translate">#00000000</color>
     <color name="black2">#252424</color>
+    <color name="card_dark">#202020</color>
+    <color name="whiteAlpha54">#8affffff</color>
     <color name="red_FD5F5F">#FD5F5F</color>
     <color name="grayWhites">#F8F8F8</color>
     <color name="grayUnReach">#33F1F1F1</color>

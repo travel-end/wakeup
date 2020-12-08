@@ -1,4 +1,4 @@
-package never.give.up.japp.ui.act
+package never.give.up.japp.ui
 
 import android.view.MenuItem
 import com.google.android.material.navigation.NavigationView

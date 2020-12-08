@@ -10,6 +10,10 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="windowNoTitle">true</item>
     </style>
+    <style name="MainActivityTheme" parent="AppTheme">
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
     <!--rect corner imageView-->
     <style name="roundedCornerImageStyle_8b">
         <item name="cornerFamily">rounded</item>

@@ -33,7 +33,7 @@
         <meta-data
             android:name="notch.config"
             android:value="portrait|landscape" />
-        <activity android:name=".ui.act.WelcomeActivity"
+        <activity android:name=".ui.WelcomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent">
             <intent-filter>
@@ -42,9 +42,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.act.MainActivity"
+        <activity android:name=".ui.MainActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity android:name=".ui.play.PlayerActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/MainActivityTheme"/>
+
         <receiver android:name=".play.MediaButtonIntentReceiver">
             <intent-filter android:priority="2147483647">
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />

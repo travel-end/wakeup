@@ -26,9 +26,8 @@ import never.give.up.japp.event.PlaylistEvent
 import never.give.up.japp.event.StatusChangedEvent
 import never.give.up.japp.model.Music
 import never.give.up.japp.net.MusicApi
-import never.give.up.japp.net.RetrofitClient
 import never.give.up.japp.play.*
-import never.give.up.japp.ui.act.PlayerActivity
+import never.give.up.japp.ui.play.PlayerActivity
 import never.give.up.japp.utils.*
 import never.give.up.japp.utils.FileUtils
 import java.lang.ref.WeakReference
@@ -77,7 +76,6 @@ class PlayerService : Service() {
     private var mServiceInUse: Boolean = false
     private var mPauseByTransientLossOfFocus: Boolean = false// 暂时失去焦点，会再次回去音频焦点
 
-    private val NOTIFICATION_ID: Int = 0x123
     private var mNotificationPostTime: Long = 0L
     private var mServiceStartId: Int = -1
 
@@ -224,7 +222,7 @@ class PlayerService : Service() {
             CoverLoader.loadImageViewByMusic(this, mPlayingMusic) {
                 mNotificationBuilder.setLargeIcon(it)
                 mNotification = mNotificationBuilder.build()
-                mNotificationManager.notify(NOTIFICATION_ID, mNotification)
+                mNotificationManager.notify(SConsts.NOTIFICATION_ID, mNotification)
 
             }
         }
@@ -707,7 +705,7 @@ class PlayerService : Service() {
 
     private fun cancelNotification() {
         stopForeground(true)
-        mNotificationManager.cancel(NOTIFICATION_ID)
+        mNotificationManager.cancel(SConsts.NOTIFICATION_ID)
         isRunningForeground = false
     }
 

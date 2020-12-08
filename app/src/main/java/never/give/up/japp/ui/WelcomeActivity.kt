@@ -1,4 +1,4 @@
-package never.give.up.japp.ui.act
+package never.give.up.japp.ui
 
 import android.Manifest
 import android.content.Intent
@@ -65,7 +65,7 @@ class WelcomeActivity:BaseActivity() {
     }
 
     private fun startMain() {
-        val mainIntent = Intent(this,MainActivity::class.java)
+        val mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.action = intent?.action
         startActivity(mainIntent)
         overridePendingTransition(0,0)

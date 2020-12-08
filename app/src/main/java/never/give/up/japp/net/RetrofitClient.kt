@@ -1,6 +1,5 @@
 package never.give.up.japp.net
 
-import android.util.Log
 import com.google.gson.GsonBuilder
 import never.give.up.japp.consts.Constants
 import never.give.up.japp.utils.log
