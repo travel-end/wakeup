@@ -283,7 +283,7 @@
                         android:maxLines="1"
                         android:textColor="@color/black_33"
                         android:textSize="12sp"
-                        tools:text="每日推荐" />
+                        android:text="每日推荐" />
 
                 </LinearLayout>
 
@@ -397,6 +397,7 @@
             </FrameLayout>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mainRvMusicList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_18"
@@ -433,6 +434,7 @@
             </FrameLayout>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mainRvArtist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_18"

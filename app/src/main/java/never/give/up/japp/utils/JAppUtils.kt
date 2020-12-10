@@ -50,6 +50,8 @@ fun Int.getDrawable()=ActivityCompat.getDrawable(Japp.getInstance(),this)
 
 fun Int.getResString() = Japp.getInstance().resources.getString(this)
 
+fun Int.getResString(size:Int) = Japp.getInstance().resources.getString(this,size)
+
 fun Int.getResDimen()=Japp.getInstance().resources.getDimension(this)
 
 fun Int.getResColor() = ContextCompat.getColor(Japp.getInstance(),this)

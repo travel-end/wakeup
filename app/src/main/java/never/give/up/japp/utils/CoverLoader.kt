@@ -3,6 +3,7 @@ package never.give.up.japp.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -87,4 +88,26 @@ object CoverLoader {
                 }
             })
     }
+    fun getCoverUri(context: Context, albumId: String): String? {
+        if (albumId == "-1") {
+            return null
+        }
+        var uri: String? = null
+        try {
+            val cursor = context.contentResolver.query(
+                Uri.parse("content://media/external/audio/albums/$albumId"),
+                arrayOf("album_art"), null, null, null)
+            if (cursor != null) {
+                cursor.moveToNext()
+                uri = cursor.getString(0)
+                cursor.close()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return uri
+    }
+
+
 }
