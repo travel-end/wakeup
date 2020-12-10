@@ -24,6 +24,7 @@ import never.give.up.japp.event.GlobalSingle
 import never.give.up.japp.event.MetaChangedEvent
 import never.give.up.japp.event.PlaylistEvent
 import never.give.up.japp.event.StatusChangedEvent
+import never.give.up.japp.listener.OnPlayProgressListener
 import never.give.up.japp.model.Music
 import never.give.up.japp.net.MusicApi
 import never.give.up.japp.play.*
@@ -58,8 +59,9 @@ class PlayerService : Service() {
     private lateinit var intentFilter: IntentFilter
 
     private lateinit var mMainHandler: Handler
-    private lateinit var mWorkThread: HandlerThread
+//    private lateinit var mWorkThread: HandlerThread
     private lateinit var mHandler: MusicPlayerHandler
+    private lateinit var mUpdateProgressHandler:UpdateProgressHandler
 
     private lateinit var powerManager: PowerManager
     lateinit var mWakeLock: PowerManager.WakeLock
@@ -82,8 +84,12 @@ class PlayerService : Service() {
 
     companion object {
         private lateinit var instance: PlayerService
+        private var onPlayProgressUpdateListener:OnPlayProgressListener?=null
         fun getInstance(): PlayerService {
             return instance
+        }
+        fun setOnUpdateProgressListener(listener:OnPlayProgressListener?) {
+            onPlayProgressUpdateListener = listener
         }
     }
 
@@ -149,10 +155,13 @@ class PlayerService : Service() {
         mMainHandler = Handler(Looper.getMainLooper())
         PlayQueueManager.getPlayModeId()
         // 初始化工作线程
-        mWorkThread = HandlerThread("MusicPlayerThread")
-        mWorkThread.start()
+//        mWorkThread = HandlerThread("MusicPlayerThread")
+//        mWorkThread.start()
 
-        mHandler = MusicPlayerHandler(this, mWorkThread.looper)
+//        mHandler = MusicPlayerHandler(this, mWorkThread.looper)
+        mHandler = MusicPlayerHandler(this, Looper.getMainLooper())
+        mUpdateProgressHandler = UpdateProgressHandler(this)
+
         // 电源键
         powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
         mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PlayerWakelockTag")
@@ -924,6 +933,24 @@ class PlayerService : Service() {
         }
     }
 
+    private class UpdateProgressHandler(content:PlayerService):Handler(Looper.getMainLooper()) {
+        private val content: WeakReference<PlayerService> = WeakReference(content)
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            content.get()?.let {s->
+                onPlayProgressUpdateListener?.onProgressUpdate(s.getCurrentPosition(),s.getDuration())
+                s.updatePlayProgress()
+            }
+        }
+    }
+
+    fun updatePlayProgress() {
+        if (isPlaying) {
+            mUpdateProgressHandler.removeMessages(SConsts.UPDATE_PROGRESS)
+            mUpdateProgressHandler.sendEmptyMessageDelayed(SConsts.UPDATE_PROGRESS,300)
+        }
+    }
+
     private fun initChannelId(): String {
         // 通知渠道的id
         val id = "music_lake_01"
@@ -958,10 +985,12 @@ class PlayerService : Service() {
         isMusicPlaying = false
         mPlayer.release()
         mHandler.removeCallbacksAndMessages(null)
-        if (mWorkThread.isAlive) {
-            mWorkThread.quitSafely()
-            mWorkThread.interrupt()
-        }
+        mUpdateProgressHandler.removeMessages(SConsts.UPDATE_PROGRESS)
+        mUpdateProgressHandler.removeCallbacksAndMessages(null)
+//        if (mWorkThread.isAlive) {
+//            mWorkThread.quitSafely()
+//            mWorkThread.interrupt()
+//        }
         audioAndFocusManager.abandonAudioFocus()
         cancelNotification()
         unregisterReceiver(mServiceReceiver)
@@ -970,5 +999,11 @@ class PlayerService : Service() {
         if (mWakeLock.isHeld) {
             mWakeLock.release()
         }
+    }
+
+    fun removeUpdateListener() {
+        mUpdateProgressHandler.removeMessages(SConsts.UPDATE_PROGRESS)
+        mUpdateProgressHandler.removeCallbacksAndMessages(null)
+        onPlayProgressUpdateListener=null
     }
 }

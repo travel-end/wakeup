@@ -2,6 +2,8 @@ package never.give.up.japp.ui
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.content.Intent
+import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import androidx.core.view.isVisible
@@ -16,10 +18,8 @@ import never.give.up.japp.consts.Constants
 import never.give.up.japp.event.GlobalSingle
 import never.give.up.japp.model.Music
 import never.give.up.japp.play.PlayManager
-import never.give.up.japp.rv.addItem
-import never.give.up.japp.rv.setText
-import never.give.up.japp.rv.setup
-import never.give.up.japp.rv.submitList
+import never.give.up.japp.rv.*
+import never.give.up.japp.ui.play.PlayerActivity
 import never.give.up.japp.utils.StringUtil
 import never.give.up.japp.utils.loadImg
 import never.give.up.japp.utils.log
@@ -110,6 +110,9 @@ class PlayControlFragment: BaseVmFragment<PlayControlViewModel>() {
                             setText(R.id.tv_title,StringUtil.getTitle(it.title))
                             setText(R.id.tv_artist,StringUtil.getArtistAndAlbum(it.artist,it.album))
                         }
+                        itemClicked(View.OnClickListener {
+                            requireActivity().startActivity(Intent(requireActivity(),PlayerActivity::class.java))
+                        })
                     }
                 }
             }

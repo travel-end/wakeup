@@ -9,16 +9,15 @@ import androidx.viewpager2.widget.ViewPager2
 import kotlinx.android.synthetic.main.activity_player.*
 import never.give.up.japp.R
 import never.give.up.japp.base.BaseVmActivity
+import never.give.up.japp.listener.OnPlayProgressListener
 import never.give.up.japp.model.Music
 import never.give.up.japp.play.PlayManager
-import never.give.up.japp.play.PlayQueueManager
+import never.give.up.japp.service.PlayerService
 import never.give.up.japp.ui.adapter.PlayerPagerAdapter
-import never.give.up.japp.utils.PlayUtil
-import never.give.up.japp.utils.StringUtil
-import never.give.up.japp.utils.TransitionAnimationUtils
+import never.give.up.japp.utils.*
 import never.give.up.japp.vm.PlayerViewModel
 
-class PlayerActivity:BaseVmActivity<PlayerViewModel>() {
+class PlayerActivity:BaseVmActivity<PlayerViewModel>(),OnPlayProgressListener {
     private var playingMusic:Music?=null
     private val coverFragment:PlayCoverFragment = PlayCoverFragment()
     private val lyricFragment:PlayLrcViewFragment = PlayLrcViewFragment()
@@ -26,6 +25,8 @@ class PlayerActivity:BaseVmActivity<PlayerViewModel>() {
     override fun layoutResId()=R.layout.activity_player
     override fun initView() {
         super.initView()
+        PlayerService.setOnUpdateProgressListener(this)
+        PlayerService.getInstance().updatePlayProgress()
         detailView.animation = moveToViewLocation()
         updatePlayMode()
         setupViewPager()
@@ -37,7 +38,26 @@ class PlayerActivity:BaseVmActivity<PlayerViewModel>() {
 
     override fun initData() {
         super.initData()
+        playingMusic = PlayManager.getPlayingMusic()
+        if (playingMusic==null) {
 
+        } else {
+            titleIv.text= playingMusic?.title
+            subTitleTv.text = playingMusic?.artist
+            collectIv.isSelected = playingMusic?.isLove == true
+            coverFragment.startRotateAnimation(PlayManager.isPlaying())
+        }
+        CoverLoader.loadBigImageView(this,playingMusic) {bitmap ->
+            val result = execute {
+                PlayUtil.blurBitmap(bitmap,10)
+            }
+            coverFragment.setImageBitmap(bitmap)
+            playingBgIv.setImageDrawable(result)
+        }
+    }
+
+    override fun initAction() {
+        super.initAction()
     }
 
     private fun setupViewPager() {
@@ -92,19 +112,19 @@ class PlayerActivity:BaseVmActivity<PlayerViewModel>() {
         lyricFragment.updateLrcTime(progress)
     }
 
-    private fun setPlayingBitmap(bitmap: Bitmap?) {
-        coverFragment.setImageBitmap(bitmap)
-    }
+//    private fun setPlayingBitmap(bitmap: Bitmap?) {
+//        coverFragment.setImageBitmap(bitmap)
+//    }
 
 
-    private fun setPlayingBg(d:Drawable?,isInit:Boolean?) {
-        if (isInit != null && isInit) {
-            playingBgIv.setImageDrawable(d)
-        } else {
-            // 加载背景过度图
-            TransitionAnimationUtils.startChangeAnimation(playingBgIv,d)
-        }
-    }
+//    private fun setPlayingBg(d:Drawable?,isInit:Boolean?) {
+//        if (isInit != null && isInit) {
+//            playingBgIv.setImageDrawable(d)
+//        } else {
+//            // 加载背景过度图
+//            TransitionAnimationUtils.startChangeAnimation(playingBgIv,d)
+//        }
+//    }
 
     // 底部上移动画
     private fun moveToViewLocation():TranslateAnimation {
@@ -116,5 +136,15 @@ class PlayerActivity:BaseVmActivity<PlayerViewModel>() {
     }
     private fun updatePlayMode() {
         PlayUtil.updatePlayMode(playModeIv,false)
+    }
+
+    override fun onProgressUpdate(position: Int, duration: Int) {
+        "播放进度：$position, 播放总时长：$duration".log()
+//        updateProgress()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PlayerService.getInstance().removeUpdateListener()
     }
 }

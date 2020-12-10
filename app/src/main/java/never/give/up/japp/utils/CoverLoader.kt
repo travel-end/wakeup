@@ -13,6 +13,7 @@ import never.give.up.japp.model.Music
 
 object CoverLoader {
     val coverUriByRandom: Int = R.drawable.ic_default_cover
+
     /**
      * 显示小图
      *
@@ -68,7 +69,22 @@ object CoverLoader {
         }
     }
 
-    fun loadBigImageView(iv:ImageView,music: Music?,callBack: ((Bitmap) -> Unit)?) {
+    fun loadBigImageView(context: Context, music: Music?, callBack: ((Bitmap) -> Unit)?) {
+        if (music == null) return
+        Glide.with(context)
+            .asBitmap()
+            .load(music.coverUri ?: R.drawable.disk)
+            .error(R.drawable.disk)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into<CustomTarget<Bitmap>>(object : CustomTarget<Bitmap>() {
+                override fun onLoadCleared(placeholder: Drawable?) {
+                }
 
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    if (callBack != null && resource != null) {
+                        callBack.invoke(resource)
+                    }
+                }
+            })
     }
 }
