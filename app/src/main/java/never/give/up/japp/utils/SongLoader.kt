@@ -4,7 +4,6 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
 import android.text.TextUtils
-import never.give.up.japp.Japp
 import never.give.up.japp.consts.Constants
 import never.give.up.japp.data.dao.DaoLitepal
 import never.give.up.japp.model.Album
@@ -222,7 +221,7 @@ object SongLoader {
         if (!TextUtils.isEmpty(selection)) {
             selectionStatement = "$selectionStatement AND $selection"
         }
-        return Japp.getInstance().contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        return context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 arrayOf("_id", "title", "artist", "album", "duration", "track", "artist_id", "album_id", MediaStore.Audio.Media.DATA, "is_music"),
                 selectionStatement, paramArrayOfString, sortOrder)
     }

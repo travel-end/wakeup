@@ -1,12 +1,16 @@
 package never.give.up.japp.ui
 
 import android.view.MenuItem
+import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import never.give.up.japp.R
 import never.give.up.japp.base.BaseVmActivity
 import never.give.up.japp.delegate.NavigationManager
 import never.give.up.japp.utils.inflate
+import never.give.up.japp.utils.log
 import never.give.up.japp.vm.MainActViewModel
 
 class MainActivity : BaseVmActivity<MainActViewModel>(),
@@ -28,5 +32,12 @@ class MainActivity : BaseVmActivity<MainActViewModel>(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         drawerLayout.closeDrawers()
         return navigationManager?.onNavigationItemSelected(item) ?: false
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+//        val cu = supportFragmentManager.findFragmentById(R.id.main_fragment)
+//        "cu:$cu".log()
+        //NavHostFragment
     }
 }

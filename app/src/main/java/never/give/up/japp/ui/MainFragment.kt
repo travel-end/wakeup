@@ -6,6 +6,7 @@ import never.give.up.japp.R
 import never.give.up.japp.base.BaseVmFragment
 import never.give.up.japp.utils.fastClickListener
 import never.give.up.japp.utils.getResString
+import never.give.up.japp.utils.log
 import never.give.up.japp.vm.MainFrgViewModel
 
 /**
@@ -29,13 +30,17 @@ class MainFragment:BaseVmFragment<MainFrgViewModel>() {
         main_title_search.fastClickListener {
             nav(R.id.action_mainFragment_to_searchMainFragment)
         }
+        layoutLocalMusic.fastClickListener {
+
+        }
     }
 
     override fun observe() {
         super.observe()
         mViewModel.localMusics.observe(this,Observer{
             it?.let {
-                mainTvLocalMusicCount.text = R.string.song_num.getResString(it.size)
+                mainTvLocalMusicCount.text = "${it.size} 首"
+//                    R.string.song_num.getResString(it.size)
             }
         })
         mViewModel.historyMusics.observe(this,Observer{
