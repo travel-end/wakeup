@@ -116,6 +116,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutHistoryMusics"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/dp_76"
                     android:layout_marginStart="@dimen/dp_8"

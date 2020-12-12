@@ -30,7 +30,8 @@ object Constants {
     const val KEY_POSITION = "key_position"
     const val KEY_MUSIC_ID = "key_music_id"
     const val KEY_FIRST_LAUNCH = "key_first_launch"
-    const val KEY_SONG_QUALITY = "song_quality"
+    const val KEY_SONG_QUALITY = "key_song_quality"
+    const val KEY_MUSIC_TYPE = "key_music_type"
 
     // config
     const val SEARCH_SONG_PAGE_SIZE = 20//每页搜索（单曲、专辑）显示的条数

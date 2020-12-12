@@ -1,9 +1,12 @@
 package never.give.up.japp.ui
 
+import android.os.Bundle
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.frg_main.*
 import never.give.up.japp.R
 import never.give.up.japp.base.BaseVmFragment
+import never.give.up.japp.consts.Constants
 import never.give.up.japp.utils.fastClickListener
 import never.give.up.japp.utils.getResString
 import never.give.up.japp.utils.log
@@ -27,11 +30,17 @@ class MainFragment:BaseVmFragment<MainFrgViewModel>() {
 
     override fun initAction() {
         super.initAction()
+        val bundle = Bundle()
         main_title_search.fastClickListener {
             nav(R.id.action_mainFragment_to_searchMainFragment)
         }
         layoutLocalMusic.fastClickListener {
-
+            bundle.putString(Constants.KEY_MUSIC_TYPE,Constants.PLAYLIST_LOCAL_ID)
+            nav(R.id.action_mainFragment_to_normalMusicsFragment,bundle)
+        }
+        layoutHistoryMusics.fastClickListener {
+            bundle.putString(Constants.KEY_MUSIC_TYPE,Constants.PLAYLIST_HISTORY_ID)
+            nav(R.id.action_mainFragment_to_normalMusicsFragment,bundle)
         }
     }
 
@@ -39,7 +48,8 @@ class MainFragment:BaseVmFragment<MainFrgViewModel>() {
         super.observe()
         mViewModel.localMusics.observe(this,Observer{
             it?.let {
-                mainTvLocalMusicCount.text = "${it.size} 首"
+                "本地音乐：${it.size}首".log()
+                mRootView.findViewById<TextView>(R.id.mainTvLocalMusicCount).text = "${it.size} 首dd"
 //                    R.string.song_num.getResString(it.size)
             }
         })
