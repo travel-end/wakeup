@@ -26,6 +26,23 @@
     <string name="in_download_queue">已经加入下载队列 …</string>
     <string name="download_failed">下载失败</string>
     <string name="download_music">下载音乐</string>
+    <string name="pause">暂停</string>
+    <string name="start">开始</string>
+    <string name="tasks_manager_demo_status_loading">加载中&#8230;</string>
+    <string name="tasks_manager_demo_status_pending">队列中</string>
+    <string name="tasks_manager_demo_status_connected">已连接上</string>
+    <string name="tasks_manager_demo_status_progress">下载中&#8230;</string>
+    <string name="tasks_manager_cache_status_progress">下载中&#8230;</string>
+    <string name="tasks_manager_demo_status_downloading" formatted="false">已下载%d %%</string>
+    <string name="tasks_manager_cache_status_downloading" formatted="false">已缓存%d %%</string>
+    <string name="tasks_manager_demo_status_error">出错</string>
+    <string name="tasks_manager_demo_status_paused">暂停</string>
+    <string name="tasks_manager_demo_status_completed">下载完成</string>
+    <string name="tasks_manager_cache_status_completed">缓存完成</string>
+    <string name="tasks_manager_demo_status_not_downloaded">未下载</string>
+    <string name="tasks_manager_cache_status_not_downloaded">未缓存</string>
+
+
     <string name="query_lrc">查找歌词中 …</string>
     <string name="read_history">最近阅读</string>
     <string name="go_to_login">点击登录</string>

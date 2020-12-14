@@ -23,6 +23,13 @@
             app:exitAnim="@anim/h_fragment_exit"
             app:popEnterAnim="@anim/h_fragment_pop_enter"
             app:popExitAnim="@anim/h_fragment_pop_exit" />
+        <action
+            android:id="@+id/action_mainFragment_to_downloadVpFragment"
+            app:destination="@id/download_vp_fragment"
+            app:enterAnim="@anim/h_fragment_enter"
+            app:exitAnim="@anim/h_fragment_exit"
+            app:popEnterAnim="@anim/h_fragment_pop_enter"
+            app:popExitAnim="@anim/h_fragment_pop_exit" />
     </fragment>
     <fragment
         android:id="@+id/search_main_fragment"
@@ -36,6 +43,14 @@
         android:name="never.give.up.japp.ui.NormalMusicsFragment"
         android:label="NormalMusicsFragment"
         tools:layout="@layout/frag_normal_musics">
+
+    </fragment>
+    <fragment
+        android:id="@+id/download_vp_fragment"
+        android:name="never.give.up.japp.ui.download.DownloadVpFragment"
+        android:label="DownloadVpFragment"
+        tools:layout="@layout/frg_tab_vp">
+
 
     </fragment>
 </navigation>

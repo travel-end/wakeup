@@ -168,6 +168,7 @@
                 android:paddingEnd="@dimen/dp_18">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutDownloadMusics"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/dp_76"
                     android:layout_marginEnd="@dimen/dp_8"

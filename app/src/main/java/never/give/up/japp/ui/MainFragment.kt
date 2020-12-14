@@ -42,6 +42,9 @@ class MainFragment:BaseVmFragment<MainFrgViewModel>() {
             bundle.putString(Constants.KEY_MUSIC_TYPE,Constants.PLAYLIST_HISTORY_ID)
             nav(R.id.action_mainFragment_to_normalMusicsFragment,bundle)
         }
+        layoutDownloadMusics.fastClickListener {
+            nav(R.id.action_mainFragment_to_downloadVpFragment)
+        }
     }
 
     override fun observe() {
