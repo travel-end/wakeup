@@ -1,5 +1,7 @@
 package never.give.up.japp.net
 
+import com.cyl.musicapi.netease.RecommendSongsInfo
+import com.cyl.musicapi.netease.base.NeteaseBaseData
 import never.give.up.japp.consts.Constants
 import never.give.up.japp.model.SearchInfo
 import never.give.up.japp.model.core.*
@@ -12,10 +14,16 @@ import retrofit2.http.*
 interface ApiService {
 
     /**
-     * 获取热搜推荐
+     * netease 获取热搜推荐
      */
     @GET("search/hot")
     suspend fun getHotSearchInfo(): SearchInfo
+    /**
+     * netease 每日推荐
+     */
+    @GET("recommend/songs")
+    suspend fun getRecommendSongs(): NeteaseBaseData<RecommendSongsInfo>
+
 
     /**
      * 搜索歌曲：https://c.y.qq.com/soso/fcgi-bin/client_search_cp?p=2&n=2&w=周杰伦&format=json

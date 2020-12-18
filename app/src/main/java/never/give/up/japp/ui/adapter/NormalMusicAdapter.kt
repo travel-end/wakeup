@@ -16,10 +16,15 @@ import never.give.up.japp.widget.RippleView
  * @By Journey 2020/12/14
  * @Description
  */
-class NormalMusicAdapter(var musicList:List<Music>):RecyclerView.Adapter<NormalMusicAdapter.NormalMusicViewHolder>() {
+class NormalMusicAdapter(musicList:List<Music>):RecyclerView.Adapter<NormalMusicAdapter.NormalMusicViewHolder>() {
     private var onMusicItemClickListener:OnMusicItemClickListener?=null
+    private var mMusics = musicList
     fun setOnMusicItemClickListener(listener: OnMusicItemClickListener?) {
         this.onMusicItemClickListener = listener
+    }
+    fun setMusics(list: List<Music>) {
+        mMusics = list
+        notifyDataSetChanged()
     }
     class NormalMusicViewHolder(itemView:View):RecyclerView.ViewHolder(itemView) {
         var tvSinger:TextView = itemView.findViewById(R.id.item_search_song_list_tv_song_singer)
@@ -33,10 +38,10 @@ class NormalMusicAdapter(var musicList:List<Music>):RecyclerView.Adapter<NormalM
         return NormalMusicViewHolder(R.layout.item_normal_music.inflate(parent))
     }
 
-    override fun getItemCount()=musicList.size
+    override fun getItemCount()=mMusics.size
 
     override fun onBindViewHolder(holder: NormalMusicViewHolder, position: Int) {
-        val music = musicList[position]
+        val music = mMusics[position]
         holder.run {
             tvSinger.text = StringUtil.getArtistAndAlbum(music.artist,music.album)
             tvSongName.text = music.title

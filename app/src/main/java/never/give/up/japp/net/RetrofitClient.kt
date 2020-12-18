@@ -64,6 +64,7 @@ class RetrofitClient {
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
 
+    // 诗词
     private val poetryRetrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(Constants.GUSHI_BASE_URL)

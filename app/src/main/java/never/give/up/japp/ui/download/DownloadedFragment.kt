@@ -75,8 +75,7 @@ class DownloadedFragment :BaseVmFragment<DownloadViewModel>(){
                     musicAdapter = NormalMusicAdapter(musics)
                     normalRvMusicList.adapter = musicAdapter
                 } else {
-                    musicAdapter?.musicList = it
-                    musicAdapter?.notifyDataSetChanged()
+                    musicAdapter?.setMusics(it)
                 }
             }
         })
